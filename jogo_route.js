@@ -21,8 +21,8 @@ router.get("/buscar/:id", async function(req,res){
     const jogo = await buscarPorId(req.params.id)
     res.status(200).json(jogo)
 })
-router.get("/buscar/:idEmpresa", async function(req,res){
-    const jogos = await buscarJogosPorEmpresa(req)
+router.get("/buscarPorEmpresa/:id", async function(req,res){
+    const jogos = await buscarJogosPorEmpresa(req.params.id)
     res.status(200).json(jogos)
 })
 
@@ -61,9 +61,9 @@ async function buscarTodos() {
     return jogos
 }
 
-async function buscarJogosPorEmpresa(empresaId) {
+async function buscarJogosPorEmpresa(id) {
     const jogos = await Jogo.findAll({where: {
-        empresaId: empresaId
+        empresaId: id
       }})
     return jogos
 }
