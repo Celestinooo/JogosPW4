@@ -1,5 +1,12 @@
 const Jogo = require("./modelos/jogo.js");
 const router = require("express").Router()
+var cors = require('cors')
+
+var corsOptions = {
+    origin: 'http://localhost:3000',
+}
+
+router.use(cors(corsOptions))
 
 router.post("/criar", async function(req,res){
     const jogo = await criarJogo(req.body)
