@@ -68,5 +68,15 @@ export const StyleJogo = styled.div`
             border: 1px solid black;
             padding: 15px;
         }
+
+        .edit {
+            border-radius: 20px;
+            margin: 0 auto;
+            padding: 10px;
+            cursor: pointer;
+            &:hover {
+                background-color: var(--greyinputborder);
+            }
+        }
     }
 `;

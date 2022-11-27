@@ -6,6 +6,8 @@ export default function Empresa() {
     const [nome, setNome] = useState('')
     const [cnpj, setCnpj] = useState('')
     const [option, setOption] = useState(0)
+    const [edit, setEdit] = useState(-1)
+    const [enviado, setEnviado] = useState(false)
 
     const [erro, setErro] = useState({
         hasErro: false,
@@ -42,6 +44,35 @@ export default function Empresa() {
         };
         fetch("http://localhost:8888/empresa/criar", requestOptions)
         .then(response => response.json())
+        setEnviado(true)
+    };
+
+    useEffect(() => {
+        if(enviado){
+            setTimeout(() => {
+                setNome('')
+                setCnpj('')
+                document.getElementById('name').value=''
+                document.getElementById('cnpj').value=''
+                setEnviado(false)
+            }, 5000);
+        }
+    });
+
+    const handleSubmitEdit = (event) => {
+        event.preventDefault();
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                nome: nome,
+                cnpj: cnpj,
+                id: edit+1,
+            })
+        };
+        fetch("http://localhost:8888/empresa/atualizar", requestOptions)
+        .then(response => response.json())
+        setEdit(-1)
     };
 
     return (
@@ -52,10 +83,18 @@ export default function Empresa() {
                     setOption(1)
                 }
                 >
-                    Criar
+                    Criar empresa
                 </button>
 
-                <button>Editar</button>
+                <button
+                    onClick={() => {
+                        buscaEmpresa()
+                        setOption(2)
+                        } 
+                    }
+                >
+                    Editar empresa
+                </button>
 
                 <button
                     className='busca_todos'
@@ -65,13 +104,13 @@ export default function Empresa() {
                         } 
                     }
                 >
-                    Buscar todos os jogos
+                    Buscar todas as empresas
                 </button>
             </div>
 
             <form onSubmit={handleSubmit} className={option == 1 ? 'visible' : 'invisible'}>
                 <div className='input'>
-                    <label htmlFor="name">Name</label>
+                    <label htmlFor="name">Nome da empresa</label>
                     <input
                         type="text"
                         name="name"
@@ -83,7 +122,7 @@ export default function Empresa() {
                 </div>
 
                 <div className='input'>
-                    <label htmlFor="cnpj">cnpj</label>
+                    <label htmlFor="cnpj">CNPJ da empresa</label>
                     <input
                         type="text"
                         name="cnpj"
@@ -96,6 +135,65 @@ export default function Empresa() {
 
                 <button type="submit">Enviar</button>
             </form>
+
+            <table className={option == 2 ? 'lista_todos visible' : 'lista_todos invisible'}>
+                <tr>
+                    <th>Nome</th>
+                    <th>CNPJ</th>
+                </tr>
+                {busca ?
+                    busca.map( (busca, index) => 
+                        <tr key={index}>
+                            <td>{busca.nome}</td>
+                            <td>{busca.cnpj}</td>
+                            <td>
+                                <button
+                                className='edit'
+                                onClick={() => 
+                                    setEdit(index)
+                                }
+                                >
+                                    Editar
+                                </button>
+                            </td>
+                        </tr>
+                    )
+                    :
+                    ''
+                }
+            </table>
+
+            {edit !== -1 ?
+                <form onSubmit={handleSubmitEdit} className={edit !== -1 ? 'visible' : 'invisible'}>
+                <div className='input'>
+                    <label htmlFor="nameE">Nome da empresa</label>
+                    <input
+                        type="text"
+                        name="name"
+                        id="nameE"
+                        onChange={(e) => {
+                            setNome(e.target.value);
+                        }}
+                        placeholder={busca[edit].nome}
+                    />
+                </div>
+
+                <div className='input'>
+                    <label htmlFor="cnpjE">CNPJ da empresa</label>
+                    <input
+                        type="text"
+                        name="cnpj"
+                        id="cnpjE"
+                        onChange={(e) => {
+                            setCnpj(e.target.value);
+                        }}
+                        placeholder={busca[edit].cnpj}
+                    />
+                </div>
+
+                <button type="submit">Enviar</button>
+            </form>
+            : ''}
 
             <table className={option == 3 ? 'lista_todos visible' : 'lista_todos invisible'}>
                 <tr>
